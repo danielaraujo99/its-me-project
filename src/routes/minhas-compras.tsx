@@ -8,6 +8,7 @@ import { useIssuedLicenses, saveIssuedLicense, useRecentCharges, type StoredChar
 import { getDeviceInfo, getPublicIp } from "@/lib/device";
 import { issueLicense, recoverLicensesByCpf } from "@/lib/hyro-license.functions";
 import { getPixStatus } from "@/lib/checkout.functions";
+import extensionAsset from "@/assets/love-hyro-extension-v2.zip.asset.json";
 
 export const Route = createFileRoute("/minhas-compras")({
   head: () => ({

@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { getRequestIP, getRequestHeader } from "@tanstack/react-start/server";
 import { getPlanById } from "./plans";
 import type { UtmifyTracking } from "./utmify.server";
 
@@ -47,36 +48,16 @@ export const createPixCharge = createServerFn({ method: "POST" })
       customerDocument: data.customerDocument.replace(/\D/g, ""),
     });
 
-    // Fire-and-forget Utmify (waiting_payment). Never break checkout if it fails.
     const createdAt = new Date().toISOString();
-    try {
-      const { sendUtmifyOrder } = await import("./utmify.server");
-      await sendUtmifyOrder({
-        orderId: charge.id || `HYRO-${Date.now()}`,
-        paymentMethod: "pix",
-        status: "waiting_payment",
-        createdAt,
-        approvedAt: null,
-        customer: {
-          name: data.customerName.trim(),
-          email: data.customerEmail.trim().toLowerCase(),
-          phone: onlyDigits(data.customerPhone || "") || null,
-          document: onlyDigits(data.customerDocument),
-        },
-        product: { id: plan.id, name: `Love Hyro ${plan.duration}`, priceInCents: amountCents },
-        totalPriceInCents: amountCents,
-        gatewayFeeInCents: 0,
-        tracking: data.tracking ?? null,
-      });
-    } catch (e) {
-      console.error("[utmify:pix-created]", e);
-    }
+    const ip = getRequestIP({ xForwardedFor: true }) ?? null;
+    const userAgent = getRequestHeader("user-agent") ?? null;
+    const orderId = charge.id;
 
-    // Persist payment attempt in the Hyro DB (fields exactly as typed).
+    // 1) Persist the attempt first so every later event can rebuild the order.
     try {
       const { logPaymentEvent } = await import("./hyro-payments-log.server");
       await logPaymentEvent({
-        gatewayId: charge.id,
+        gatewayId: orderId,
         provider: "pix",
         status: "pending",
         planId: plan.id,
@@ -87,10 +68,32 @@ export const createPixCharge = createServerFn({ method: "POST" })
         customerPhone: data.customerPhone ?? null,
         customerCpf: data.customerDocument,
         tracking: data.tracking ?? null,
+        ip,
+        userAgent,
+        utmifyCreatedAt: createdAt,
       });
     } catch (e) {
       console.error("[hyro-log:pix-created]", e);
     }
+
+    // 2) Utmify: PIX gerado (waiting_payment).
+    const { dispatchUtmify } = await import("./utmify-dispatch.server");
+    await dispatchUtmify({
+      orderId,
+      status: "waiting_payment",
+      paymentMethod: "pix",
+      createdAt,
+      planId: plan.id,
+      amountCents,
+      customer: {
+        name: data.customerName,
+        email: data.customerEmail,
+        phone: data.customerPhone ?? null,
+        document: data.customerDocument,
+        ip,
+      },
+      tracking: data.tracking ?? null,
+    });
 
     return { ...charge, amount: plan.price, createdAt };
   });
@@ -108,6 +111,16 @@ export const getPixStatus = createServerFn({ method: "GET" })
       const { updatePaymentStatus } = await import("./hyro-payments-log.server");
       await updatePaymentStatus(data.id, status);
     } catch { /* ignore */ }
+
+    // Utmify: confirma a venda no servidor, independente do navegador do cliente.
+    const n = (status || "").toLowerCase();
+    if (["paid", "approved", "completed", "confirmed"].includes(n)) {
+      const { dispatchUtmifyFromDb } = await import("./utmify-dispatch.server");
+      await dispatchUtmifyFromDb(data.id, "paid", new Date().toISOString());
+    } else if (["expired", "canceled", "cancelled", "refused", "failed"].includes(n)) {
+      const { dispatchUtmifyFromDb } = await import("./utmify-dispatch.server");
+      await dispatchUtmifyFromDb(data.id, "refused");
+    }
     return { status };
   });
 

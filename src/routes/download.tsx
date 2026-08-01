@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import extAsset from "@/assets/love-hyro-extension.zip.asset.json";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
@@ -30,7 +29,7 @@ export const Route = createFileRoute("/download")({
   component: DownloadPage,
 });
 
-const EXT_URL = extAsset.url;
+const EXT_URL = "https://drive.google.com/file/d/1L2WH-F66YWsQvX_M_N76Ab632WNunEzk/view?usp=sharing";
 const WHATSAPP_URL = "https://wa.me/5511999999999";
 
 function DownloadPage() {
@@ -69,20 +68,14 @@ function DownloadPage() {
 
     setDownloading(true);
     try {
-      const r = await fetch(EXT_URL);
-      if (!r.ok) throw new Error(`Falha ao baixar (${r.status})`);
-      const blob = await r.blob();
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "love-hyro-extension.zip";
-      a.click();
-      URL.revokeObjectURL(a.href);
+      window.open(EXT_URL, "_blank", "noopener,noreferrer");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Erro no download");
     } finally {
       setDownloading(false);
     }
   }
+
 
   const expiresLabel = ok?.expiresAt
     ? new Date(ok.expiresAt).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })

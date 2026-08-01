@@ -168,7 +168,7 @@ export function VideoTutorial() {
               poster={TUTORIAL_COVER}
               muted={muted}
               playsInline
-              preload="auto"
+              preload="metadata"
               disablePictureInPicture
               controlsList="nodownload noremoteplayback noplaybackrate"
               onContextMenu={(e) => e.preventDefault()}

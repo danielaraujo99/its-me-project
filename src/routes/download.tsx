@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import extAsset from "@/assets/love-hyro-extension.zip.asset.json";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,

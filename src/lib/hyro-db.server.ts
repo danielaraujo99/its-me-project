@@ -3,10 +3,25 @@
 import { createClient } from "@supabase/supabase-js";
 
 export function getHyroDbConfig() {
-  const url = process.env.HYRO_SUPABASE_URL?.trim();
-  const key = process.env.HYRO_SUPABASE_ANON_KEY?.trim();
+  const env = process.env as Record<string, string | undefined>;
+  const pick = (...names: string[]) => {
+    for (const n of names) {
+      const v = env[n]?.trim();
+      if (v) return v;
+    }
+    return undefined;
+  };
+  // Accept both HYRO_* and HERO_* spellings, anon or service-role keys.
+  const url = pick("HYRO_SUPABASE_URL", "HERO_SUPABASE_URL");
+  const key = pick(
+    "HYRO_SUPABASE_SERVICE_ROLE_KEY",
+    "HERO_SUPABASE_SERVICE_ROLE_KEY",
+    "HYRO_SUPABASE_ANON_KEY",
+    "HERO_SUPABASE_ANON_KEY",
+  );
   return { url, key, configured: Boolean(url && key) };
 }
+
 
 export function getHyroDb() {
   const { url, key, configured } = getHyroDbConfig();

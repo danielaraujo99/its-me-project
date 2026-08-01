@@ -168,6 +168,7 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   useEffect(() => {
+    import("../lib/cache-bust").then((m) => m.runCacheMaintenance());
     import("../lib/site-guard").then((m) => m.installSiteGuard());
     import("../lib/utm-tracker").then((m) => m.captureUtms());
   }, []);

@@ -6,10 +6,22 @@
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
+// Unique per build/deploy. Used by src/lib/cache-bust.ts to detect that a
+// browser is running an outdated copy of the app and clean stale caches.
+const APP_BUILD_ID =
+  process.env["VITE_APP_VERSION"] ||
+  process.env["VERCEL_GIT_COMMIT_SHA"] ||
+  `build_${Date.now().toString(36)}`;
+
 export default defineConfig({
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
     server: { entry: "server" },
+  },
+  vite: {
+    define: {
+      __APP_BUILD_ID__: JSON.stringify(APP_BUILD_ID),
+    },
   },
 });

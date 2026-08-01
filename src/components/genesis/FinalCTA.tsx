@@ -1,8 +1,10 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Download, Rocket } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import { useCheckoutFallbackNav } from "@/lib/checkout-nav";
 
 export function FinalCTA() {
+  const fallbackNav = useCheckoutFallbackNav();
   return (
     <section className="relative py-20 sm:py-28">
       <div className="mx-auto max-w-5xl px-5 lg:px-8">
@@ -49,6 +51,7 @@ export function FinalCTA() {
                 to="/checkout/$planId"
                 params={{ planId: "HYRO-01001" }}
                 search={(prev: Record<string, unknown>) => prev as never}
+                onClick={() => fallbackNav("/checkout/HYRO-01001")}
                 className="group inline-flex h-11 items-center gap-2 rounded-full bg-white px-5 text-sm font-semibold text-[#0B0715] hover:bg-white/90 transition-colors"
               >
                 Testar por R$ 7,90

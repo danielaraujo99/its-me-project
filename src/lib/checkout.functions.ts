@@ -99,8 +99,22 @@ export const createPixCharge = createServerFn({ method: "POST" })
   });
 
 
+export type PixStatusInput = {
+  id: string;
+  order?: {
+    planId?: string | null;
+    amountCents?: number | null;
+    createdAt?: string | null;
+    customerName?: string | null;
+    customerEmail?: string | null;
+    customerPhone?: string | null;
+    customerDocument?: string | null;
+    tracking?: UtmifyTracking | null;
+  } | null;
+};
+
 export const getPixStatus = createServerFn({ method: "GET" })
-  .inputValidator((data: { id: string }) => {
+  .inputValidator((data: PixStatusInput) => {
     if (!data?.id) throw new Error("ID obrigatório");
     return data;
   })
@@ -113,14 +127,30 @@ export const getPixStatus = createServerFn({ method: "GET" })
     } catch { /* ignore */ }
 
     // Utmify: confirma a venda no servidor, independente do navegador do cliente.
+    const o = data.order ?? null;
+    const fallback = o
+      ? {
+          provider: "pix" as const,
+          planId: o.planId ?? null,
+          amountCents: o.amountCents ?? null,
+          createdAt: o.createdAt ?? null,
+          customerName: o.customerName ?? null,
+          customerEmail: o.customerEmail ?? null,
+          customerPhone: o.customerPhone ?? null,
+          customerDocument: o.customerDocument ?? null,
+          tracking: o.tracking ?? null,
+        }
+      : null;
+
     const n = (status || "").toLowerCase();
     if (["paid", "approved", "completed", "confirmed"].includes(n)) {
       const { dispatchUtmifyFromDb } = await import("./utmify-dispatch.server");
-      await dispatchUtmifyFromDb(data.id, "paid", new Date().toISOString());
+      await dispatchUtmifyFromDb(data.id, "paid", new Date().toISOString(), fallback);
     } else if (["expired", "canceled", "cancelled", "refused", "failed"].includes(n)) {
       const { dispatchUtmifyFromDb } = await import("./utmify-dispatch.server");
-      await dispatchUtmifyFromDb(data.id, "refused");
+      await dispatchUtmifyFromDb(data.id, "refused", null, fallback);
     }
     return { status };
   });
+
 

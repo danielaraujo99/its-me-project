@@ -72,6 +72,13 @@ export function PixModal({ charge, onClose, onMinimize }: { charge: Charge; onCl
     return () => window.clearInterval(t);
   }, []);
 
+  const [slow, setSlow] = useState(false);
+  useEffect(() => {
+    if (status !== "pending") { setSlow(false); return; }
+    const t = window.setTimeout(() => setSlow(true), 10000);
+    return () => window.clearTimeout(t);
+  }, [status]);
+
   useEffect(() => {
     if (status !== "pending") return;
     if (remaining <= 0) {
@@ -325,6 +332,19 @@ export function PixModal({ charge, onClose, onMinimize }: { charge: Charge; onCl
                   <Loader2 className="h-3.5 w-3.5 animate-spin text-[#A78BFA]" />
                   Aguardando confirmação do pagamento...
                 </div>
+
+                {slow && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mt-3 rounded-xl border border-[#7A5CFF]/30 bg-[#5B3DF5]/10 px-3 py-2.5 flex items-start gap-2.5"
+                  >
+                    <AlertCircle className="h-4 w-4 text-[#A78BFA] shrink-0 mt-[1px]" />
+                    <p className="text-[12px] leading-relaxed text-white/75">
+                      Está demorando um pouco mais que o normal. Não feche esta janela: assim que o banco confirmar, sua licença aparece aqui automaticamente.
+                    </p>
+                  </motion.div>
+                )}
               </>
             )}
           </div>

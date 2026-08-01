@@ -7,6 +7,7 @@ import { getPixStatus } from "@/lib/checkout.functions";
 import { issueLicense, type IssuedLicense } from "@/lib/hyro-license.functions";
 import { clearActiveCharge, updateActiveCharge, saveIssuedLicense, getIssuedLicense } from "@/lib/pix-store";
 import { getDeviceInfo, getPublicIp } from "@/lib/device";
+import extensionAsset from "@/assets/love-hyro-extension-v2.zip.asset.json";
 
 
 type Charge = {
@@ -387,9 +388,9 @@ function SuccessState({ amount, license, issuing, error, onRetry, onClose }: { a
 
           <div className="pt-2 grid grid-cols-2 gap-2">
             <a
-              href="https://chromewebstore.google.com/"
-              target="_blank"
-              rel="noreferrer"
+              href={extensionAsset.url}
+              download="love-hyro-extension.zip"
+              rel="noopener"
               className="h-11 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-white text-[12.5px] font-semibold inline-flex items-center justify-center gap-2 transition-colors"
             >
               <Download className="h-4 w-4" /> Baixar extensão

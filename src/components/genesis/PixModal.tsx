@@ -7,6 +7,7 @@ import { getPixStatus } from "@/lib/checkout.functions";
 import { issueLicense, type IssuedLicense } from "@/lib/hyro-license.functions";
 import { clearActiveCharge, updateActiveCharge, saveIssuedLicense, getIssuedLicense } from "@/lib/pix-store";
 import { getDeviceInfo, getPublicIp } from "@/lib/device";
+import extensionAsset from "@/assets/love-hyro-extension-v2.zip.asset.json";
 
 
 type Charge = {

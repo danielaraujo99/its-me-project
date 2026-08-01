@@ -199,7 +199,7 @@ function LicenseBlock({ license, onClose }: { license: IssuedLicense; onClose: (
       <Row icon={Mail} label="E-mail cadastrado" value={license.email} onCopy={copy} copied={copied === "email"} field="email" />
       <Row icon={Calendar} label="Válida até" value={fmt(license.expiresAt)} onCopy={copy} copied={copied === "exp"} field="exp" />
       <div className="pt-2 grid grid-cols-2 gap-2">
-        <a href="/download" className="h-11 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-white text-[12.5px] font-semibold inline-flex items-center justify-center gap-2 transition-colors">
+        <a href={extensionAsset.url} download="love-hyro-extension.zip" rel="noopener" className="h-11 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-white text-[12.5px] font-semibold inline-flex items-center justify-center gap-2 transition-colors">
           <Download className="h-4 w-4" /> Baixar extensão
         </a>
         <button onClick={onClose} className="h-11 rounded-xl bg-[#5B3DF5]/90 hover:bg-[#5B3DF5] border border-white/10 text-white text-[12.5px] font-semibold">Concluir</button>

@@ -1,5 +1,6 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { useActiveCharge } from "@/lib/pix-store";
 
 const WHATS_NUMBER = "5527981359051";
 const WHATS_URL = `https://wa.me/${WHATS_NUMBER}?text=${encodeURIComponent(

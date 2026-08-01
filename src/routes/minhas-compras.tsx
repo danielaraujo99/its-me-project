@@ -166,7 +166,20 @@ function AutoRecovery() {
     setBusyId(charge.id);
     setMsg(null);
     try {
-      const r = await getPixStatus({ data: { id: charge.id } });
+      const { getUtms } = await import("@/lib/utm-tracker");
+      const r = await getPixStatus({ data: {
+        id: charge.id,
+        order: {
+          planId: charge.planId ?? null,
+          amountCents: Math.round((charge.amount || 0) * 100),
+          createdAt: charge.createdAt ? new Date(charge.createdAt).toISOString() : null,
+          customerName: charge.customerName ?? null,
+          customerEmail: charge.customerEmail ?? null,
+          customerPhone: charge.customerPhone ?? null,
+          customerDocument: charge.customerCpf ?? null,
+          tracking: getUtms(),
+        },
+      } });
       const status = (r.status || "").toLowerCase();
       if (!["paid", "approved", "completed", "confirmed"].includes(status)) {
         setMsg({ kind: "err", text: `Pagamento ainda não confirmado no gateway (status: ${r.status}).` });

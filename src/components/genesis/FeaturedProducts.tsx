@@ -105,6 +105,7 @@ export function FeaturedProducts() {
 }
 
 function PlanCard({ plan, index }: { plan: Plan; index: number }) {
+  const fallbackNav = useCheckoutFallbackNav();
   return (
     <motion.article
       data-card

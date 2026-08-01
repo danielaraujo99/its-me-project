@@ -69,7 +69,13 @@ function DownloadPage() {
 
     setDownloading(true);
     try {
-      window.open(EXT_URL, "_blank", "noopener,noreferrer");
+      const a = document.createElement("a");
+      a.href = EXT_URL;
+      a.download = "love-hyro-extension.zip";
+      a.rel = "noopener";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Erro no download");
     } finally {

@@ -81,9 +81,9 @@ function PurchasesPage() {
             />
           </div>
           <a
-            href="https://chromewebstore.google.com/"
-            target="_blank"
-            rel="noreferrer"
+            href={extensionAsset.url}
+            download="love-hyro-extension.zip"
+            rel="noopener"
             className="h-12 px-5 rounded-2xl bg-[#5B3DF5]/90 hover:bg-[#5B3DF5] border border-white/10 text-white text-[13px] font-semibold inline-flex items-center justify-center gap-2 transition-colors"
           >
             <Download className="h-4 w-4" /> Baixar extensão

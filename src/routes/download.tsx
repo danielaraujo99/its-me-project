@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { Background } from "@/components/genesis/Background";
 import { validateLicense } from "@/lib/hyro-validate.functions";
+import extensionAsset from "@/assets/love-hyro-extension.zip.asset.json";
 
 export const Route = createFileRoute("/download")({
   head: () => ({
@@ -29,7 +30,7 @@ export const Route = createFileRoute("/download")({
   component: DownloadPage,
 });
 
-const EXT_URL = "https://drive.google.com/file/d/1L2WH-F66YWsQvX_M_N76Ab632WNunEzk/view?usp=sharing";
+const EXT_URL = extensionAsset.url;
 const WHATSAPP_URL = "https://wa.me/5511999999999";
 
 function DownloadPage() {

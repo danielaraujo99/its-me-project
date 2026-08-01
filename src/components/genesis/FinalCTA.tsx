@@ -1,8 +1,10 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Download, Rocket } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import { useCheckoutFallbackNav } from "@/lib/checkout-nav";
 
 export function FinalCTA() {
+  const fallbackNav = useCheckoutFallbackNav();
   return (
     <section className="relative py-20 sm:py-28">
       <div className="mx-auto max-w-5xl px-5 lg:px-8">

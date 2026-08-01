@@ -74,18 +74,22 @@ export function CommunityBanner() {
                 <Users className="h-5 w-5 text-[#A78BFA]" />
               </div>
 
-              <h3 className="mt-4 text-lg font-semibold">Comunidade lotada</h3>
+              <h3 className="mt-4 text-lg font-semibold">Nosso 4º grupo está aberto</h3>
               <p className="mt-2 text-sm text-white/65 leading-relaxed">
-                A nossa comunidade atual já atingiu o limite de membros. Em breve vamos abrir uma nova
-                comunidade oficial da Love Hyro. Fica de olho, aviso aqui assim que liberar.
+                Acabamos de abrir o quarto grupo oficial da Love Hyro. É lá que postamos as
+                atualizações da extensão, dicas de uso e novidades em primeira mão. Entra e fica
+                sempre por dentro.
               </p>
 
-              <button
+              <a
+                href="https://chat.whatsapp.com/BoAKE1Bbx1E5KG8fcDbNr1"
+                target="_blank"
+                rel="noopener noreferrer"
                 onClick={() => setShowModal(false)}
-                className="mt-6 w-full h-10 rounded-full bg-[#5B3DF5] hover:bg-[#6a4cf7] transition-colors text-sm font-medium"
+                className="mt-6 w-full h-10 rounded-full bg-[#5B3DF5] hover:bg-[#6a4cf7] transition-colors text-sm font-medium inline-flex items-center justify-center gap-2"
               >
-                Entendi
-              </button>
+                <WhatsAppIcon className="h-4 w-4" /> Entrar
+              </a>
             </motion.div>
           </motion.div>
         )}

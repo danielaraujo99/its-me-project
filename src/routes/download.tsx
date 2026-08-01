@@ -69,20 +69,14 @@ function DownloadPage() {
 
     setDownloading(true);
     try {
-      const r = await fetch(EXT_URL);
-      if (!r.ok) throw new Error(`Falha ao baixar (${r.status})`);
-      const blob = await r.blob();
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "love-hyro-extension.zip";
-      a.click();
-      URL.revokeObjectURL(a.href);
+      window.open(EXT_URL, "_blank", "noopener,noreferrer");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Erro no download");
     } finally {
       setDownloading(false);
     }
   }
+
 
   const expiresLabel = ok?.expiresAt
     ? new Date(ok.expiresAt).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })

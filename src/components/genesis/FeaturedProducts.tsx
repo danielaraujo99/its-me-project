@@ -250,6 +250,7 @@ function PlanCard({ plan, index }: { plan: Plan; index: number }) {
             to="/checkout/$planId"
             params={{ planId: plan.id }}
             search={(prev: Record<string, unknown>) => prev as never}
+            onClick={() => fallbackNav(`/checkout/${plan.id}`)}
             className="shrink-0 inline-flex items-center gap-1.5 sm:gap-2 h-11 sm:h-12 px-4 sm:px-5 rounded-full text-[12px] sm:text-[13px] font-black tracking-wider text-white bg-gradient-to-b from-[#7A5CFF] to-[#5B3DF5] shadow-[0_10px_30px_-10px_rgba(91,61,245,0.9)] hover:brightness-110 hover:-translate-y-0.5 transition-all"
           >
             COMPRAR <ChevronRight className="h-4 w-4" />

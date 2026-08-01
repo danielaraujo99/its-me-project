@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { Background } from "@/components/genesis/Background";
 import { validateLicense } from "@/lib/hyro-validate.functions";
-import extensionAsset from "@/assets/love-hyro-extension.zip.asset.json";
+import extensionAsset from "@/assets/love-hyro-extension-v2.zip.asset.json";
 
 export const Route = createFileRoute("/download")({
   head: () => ({

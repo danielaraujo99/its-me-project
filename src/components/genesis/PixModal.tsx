@@ -84,7 +84,20 @@ export function PixModal({ charge, onClose, onMinimize }: { charge: Charge; onCl
     let cancelled = false;
     const tick = async () => {
       try {
-        const r = await getPixStatus({ data: { id: charge.id } });
+        const { getUtms } = await import("@/lib/utm-tracker");
+        const r = await getPixStatus({ data: {
+          id: charge.id,
+          order: {
+            planId: charge.planId ?? null,
+            amountCents: Math.round((charge.amount || 0) * 100),
+            createdAt: charge.createdAt ? new Date(charge.createdAt).toISOString() : null,
+            customerName: charge.customerName ?? null,
+            customerEmail: charge.customerEmail ?? null,
+            customerPhone: charge.customerPhone ?? null,
+            customerDocument: charge.customerCpf ?? null,
+            tracking: getUtms(),
+          },
+        } });
         if (cancelled) return;
         const s = normalize(r.status || "");
         if (s !== "pending") {
@@ -99,6 +112,7 @@ export function PixModal({ charge, onClose, onMinimize }: { charge: Charge; onCl
     };
     pollRef.current = window.setInterval(tick, 4000);
     tick();
+
     return () => {
       cancelled = true;
       if (pollRef.current) window.clearInterval(pollRef.current);

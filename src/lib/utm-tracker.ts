@@ -27,22 +27,14 @@ export function captureUtms(): void {
     const cur = getUtms();
     let touched = false;
 
+    // Só valores reais dos parâmetros oficiais — nada inventado,
+    // para não sujar a atribuição no painel da Utmify.
     for (const k of FIELDS) {
-      const v = url.searchParams.get(k);
+      const v = (url.searchParams.get(k) || "").trim();
       if (v && !cur[k]) {
         cur[k] = v;
         touched = true;
       }
-    }
-
-    // Fallbacks usados por trafego pago quando a URL nao traz src/sck.
-    if (!cur.src) {
-      const alt = url.searchParams.get("xcod") || url.searchParams.get("fbclid") || url.searchParams.get("gclid");
-      if (alt) { cur.src = alt; touched = true; }
-    }
-    if (!cur.utm_source) {
-      if (url.searchParams.get("fbclid")) { cur.utm_source = "FB"; touched = true; }
-      else if (url.searchParams.get("gclid")) { cur.utm_source = "GOOGLE"; touched = true; }
     }
 
     if (touched) write(cur);
@@ -50,6 +42,7 @@ export function captureUtms(): void {
     /* ignore */
   }
 }
+
 
 export function getUtms(): Utms {
   if (typeof window === "undefined") return {};

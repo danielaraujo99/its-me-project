@@ -106,56 +106,89 @@ export async function dispatchUtmify(input: DispatchInput): Promise<void> {
   }
 }
 
+export type DispatchFallback = {
+  planId?: string | null;
+  amountCents?: number | null;
+  provider?: "pix" | "card" | null;
+  createdAt?: string | null;
+  customerName?: string | null;
+  customerEmail?: string | null;
+  customerPhone?: string | null;
+  customerDocument?: string | null;
+  tracking?: UtmifyTracking | null;
+};
+
 /**
  * Sends an event rebuilding the whole order from the payment log
  * (used by status polling, where the browser sends only the payment id).
+ * When the log row is missing (DB offline / row never written) it falls back
+ * to the snapshot the caller provides, so `paid` is never lost.
  */
 export async function dispatchUtmifyFromDb(
   orderId: string,
   status: DispatchStatus,
   approvedAt?: string | null,
+  fallback?: DispatchFallback | null,
 ): Promise<void> {
   try {
     const row = await readRow(orderId);
-    if (!row) return;
-    if (row[FLAG[status]] === true) return;
+    if (row && row[FLAG[status]] === true) return;
 
-    const email = String(row["customer_email"] ?? "");
-    const name = String(row["customer_name"] ?? "");
+    const pick = (col: string, fb?: string | null) => {
+      const v = row?.[col];
+      const s = typeof v === "string" ? v.trim() : "";
+      return s || (fb ?? "").trim();
+    };
+
+    const email = pick("customer_email", fallback?.customerEmail);
+    const name = pick("customer_name", fallback?.customerName);
     if (!email || !name) return;
 
-    const created = row["utmify_created_at"] ?? row["created_at"];
+    const planId = pick("plan_id", fallback?.planId);
+    const amountCents =
+      Number(row?.["amount_cents"] ?? 0) || Number(fallback?.amountCents ?? 0);
+    if (!planId || amountCents <= 0) return;
+
+    const provider = (row?.["provider"] as string | undefined) ?? fallback?.provider ?? "pix";
+    const created = row?.["utmify_created_at"] ?? row?.["created_at"] ?? fallback?.createdAt;
     const createdAt =
       typeof created === "string" && !Number.isNaN(new Date(created).getTime())
         ? new Date(created).toISOString()
         : new Date().toISOString();
 
+    const trackFrom = (col: string, fb?: string | null) => {
+      const v = row?.[col];
+      const s = typeof v === "string" ? v.trim() : "";
+      return s || (fb ?? null);
+    };
+
     await dispatchUtmify({
       orderId,
       status,
-      paymentMethod: row["provider"] === "card" ? "credit_card" : "pix",
+      paymentMethod: provider === "card" ? "credit_card" : "pix",
       createdAt,
       approvedAt: approvedAt ?? null,
-      planId: String(row["plan_id"] ?? ""),
-      amountCents: Number(row["amount_cents"] ?? 0),
+      planId,
+      amountCents,
       customer: {
         name,
         email,
-        phone: (row["customer_phone"] as string | null) ?? null,
-        document: (row["customer_cpf"] as string | null) ?? null,
-        ip: (row["ip"] as string | null) ?? null,
+        phone: pick("customer_phone", fallback?.customerPhone) || null,
+        document: pick("customer_cpf", fallback?.customerDocument) || null,
+        ip: (row?.["ip"] as string | null) ?? null,
       },
       tracking: {
-        src: (row["src"] as string | null) ?? null,
-        sck: (row["sck"] as string | null) ?? null,
-        utm_source: (row["utm_source"] as string | null) ?? null,
-        utm_campaign: (row["utm_campaign"] as string | null) ?? null,
-        utm_medium: (row["utm_medium"] as string | null) ?? null,
-        utm_content: (row["utm_content"] as string | null) ?? null,
-        utm_term: (row["utm_term"] as string | null) ?? null,
+        src: trackFrom("src", fallback?.tracking?.src),
+        sck: trackFrom("sck", fallback?.tracking?.sck),
+        utm_source: trackFrom("utm_source", fallback?.tracking?.utm_source),
+        utm_campaign: trackFrom("utm_campaign", fallback?.tracking?.utm_campaign),
+        utm_medium: trackFrom("utm_medium", fallback?.tracking?.utm_medium),
+        utm_content: trackFrom("utm_content", fallback?.tracking?.utm_content),
+        utm_term: trackFrom("utm_term", fallback?.tracking?.utm_term),
       },
     });
   } catch (e) {
     console.error("[utmify:dispatch-db]", e instanceof Error ? e.message : String(e));
   }
 }
+

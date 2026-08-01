@@ -75,7 +75,7 @@ export function PixModal({ charge, onClose, onMinimize }: { charge: Charge; onCl
   const [slow, setSlow] = useState(false);
   useEffect(() => {
     if (status !== "pending") { setSlow(false); return; }
-    const t = window.setTimeout(() => setSlow(true), 10000);
+    const t = window.setTimeout(() => setSlow(true), 60000);
     return () => window.clearTimeout(t);
   }, [status]);
 
@@ -337,9 +337,9 @@ export function PixModal({ charge, onClose, onMinimize }: { charge: Charge; onCl
                   <motion.div
                     initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mt-3 rounded-xl border border-[#7A5CFF]/30 bg-[#5B3DF5]/10 px-3 py-2.5 flex items-start gap-2.5"
+                    className="mt-3 rounded-xl border border-amber-400/40 bg-amber-400/10 px-3 py-2.5 flex items-start gap-2.5"
                   >
-                    <AlertCircle className="h-4 w-4 text-[#A78BFA] shrink-0 mt-[1px]" />
+                    <AlertCircle className="h-4 w-4 text-amber-300 shrink-0 mt-[1px]" />
                     <p className="text-[12px] leading-relaxed text-white/75">
                       Está demorando um pouco mais que o normal. Não feche esta janela: assim que o banco confirmar, sua licença aparece aqui automaticamente.
                     </p>

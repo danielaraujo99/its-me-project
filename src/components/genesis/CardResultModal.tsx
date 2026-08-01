@@ -5,6 +5,7 @@ import { formatBRL } from "@/lib/plans";
 import { issueLicense, type IssuedLicense } from "@/lib/hyro-license.functions";
 import { saveIssuedLicense, getIssuedLicense } from "@/lib/pix-store";
 import { getDeviceInfo, getPublicIp } from "@/lib/device";
+import extensionAsset from "@/assets/love-hyro-extension-v2.zip.asset.json";
 
 type Buyer = {
   planId: string;

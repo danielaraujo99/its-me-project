@@ -4,6 +4,7 @@ import { Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Infinity as InfinityIcon, Zap, ShieldCheck, Clock, CheckCircle2 } from "lucide-react";
 
 import { PLANS, type Plan, formatBRL } from "@/lib/plans";
+import { useCheckoutFallbackNav } from "@/lib/checkout-nav";
 import { SectionHeader } from "./SectionHeader";
 
 

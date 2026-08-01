@@ -127,29 +127,23 @@ export const issueLicense = createServerFn({ method: "POST" })
     const { error } = await db.from("hyro_extension_licenses").insert(row);
     if (error) throw new Error(`Não foi possível emitir a licença: ${error.message}`);
 
-    // Fire-and-forget Utmify (paid). Never break license delivery if it fails.
+    // Utmify: rede de seguranca idempotente (o envio principal ocorre no polling do servidor).
     try {
-      const { sendUtmifyOrder } = await import("./utmify.server");
+      const { dispatchUtmify } = await import("./utmify-dispatch.server");
       const amountCents = Math.round(plan.price * 100);
       const nowIso = new Date().toISOString();
       const createdAt = data.orderCreatedAt && !Number.isNaN(new Date(data.orderCreatedAt).getTime())
-        ? data.orderCreatedAt
+        ? new Date(data.orderCreatedAt).toISOString()
         : nowIso;
-      await sendUtmifyOrder({
+      await dispatchUtmify({
         orderId: data.paymentId,
-        paymentMethod: provider === "card" ? "credit_card" : "pix",
         status: "paid",
+        paymentMethod: provider === "card" ? "credit_card" : "pix",
         createdAt,
         approvedAt: nowIso,
-        customer: {
-          name: data.customerName.trim(),
-          email,
-          phone: phone || null,
-          document: cpf || null,
-        },
-        product: { id: plan.id, name: `Love Hyro ${plan.duration}`, priceInCents: amountCents },
-        totalPriceInCents: amountCents,
-        gatewayFeeInCents: 0,
+        planId: plan.id,
+        amountCents,
+        customer: { name: data.customerName, email, phone: phone || null, document: cpf || null },
         tracking: data.tracking ?? null,
       });
     } catch (e) {

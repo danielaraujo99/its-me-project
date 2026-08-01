@@ -87,9 +87,19 @@ export async function createPix(input: {
   });
 
   if (r.status < 200 || r.status >= 300 || (r.json && (r.json as { success?: boolean }).success === false)) {
-    const msg = pick<string>(r.json, ["error", "message", "detail"]) || r.text || `Falha ao criar PIX`;
+    const apiMsg = pick<string>(r.json, ["error", "message", "detail"]);
+    const msg = statusMessage(r.status) || apiMsg || r.text || `Falha ao criar PIX`;
     console.error("[vexopay:create]", r.status, r.text?.slice(0, 500));
     throw new Error(`${msg} (HTTP ${r.status})`);
+  }
+
+  const missingCode = !pick<string>(
+    (r.json && ((r.json as { data?: unknown }).data ?? (r.json as { result?: unknown }).result)) || r.json || {},
+    ["copyPaste", "copy_paste", "qrCode", "qr_code", "brcode", "emv"],
+  );
+  if (missingCode) {
+    console.error("[vexopay:create] resposta sem código PIX", r.text?.slice(0, 500));
+    throw new Error("O processador não retornou o código PIX. Tente novamente em instantes");
   }
 
 
@@ -105,7 +115,9 @@ export async function createPix(input: {
 
 export async function checkPixStatus(id: string): Promise<string> {
   const r = await vexo(`/api/gateway/pix-status?transactionId=${encodeURIComponent(id)}`, { method: "GET" });
-  if (r.status < 200 || r.status >= 300) throw new Error("Falha ao consultar status");
+  if (r.status < 200 || r.status >= 300) {
+    throw new Error(`${statusMessage(r.status) || "Falha ao consultar status"} (HTTP ${r.status})`);
+  }
   const inner = (r.json && ((r.json as { data?: unknown }).data ?? (r.json as { result?: unknown }).result)) || r.json || {};
   return String(pick<string>(inner, ["status", "state"]) ?? "unknown").toLowerCase();
 }

@@ -27,6 +27,7 @@ export type PaymentLogInput = {
   } | null;
   ip?: string | null;
   userAgent?: string | null;
+  utmifyCreatedAt?: string | null;   // ISO — fixed order creation time sent to Utmify
 };
 
 const onlyDigits = (v?: string | null) => (v || "").replace(/\D+/g, "");
@@ -59,6 +60,7 @@ export async function logPaymentEvent(input: PaymentLogInput): Promise<void> {
       ip: input.ip ?? null,
       user_agent: input.userAgent ?? null,
       created_source: "site-vendas",
+      utmify_created_at: input.utmifyCreatedAt ?? new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
 

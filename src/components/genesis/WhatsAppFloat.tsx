@@ -11,6 +11,10 @@ export function WhatsAppFloat() {
   const reduce = useReducedMotion();
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const charge = useActiveCharge();
+  // Enquanto existe um PIX aguardando pagamento, escondemos o botão.
+  // Assim que for pago ou expirar, o charge deixa de ser "pending" e ele volta.
+  const hidden = charge?.status === "pending";
 
   useEffect(() => {
     setMounted(true);
@@ -21,6 +25,8 @@ export function WhatsAppFloat() {
       clearTimeout(c);
     };
   }, []);
+
+  if (hidden) return null;
 
   return (
     <div className="fixed bottom-5 right-5 z-[9999] flex items-end gap-3 sm:bottom-6 sm:right-6">

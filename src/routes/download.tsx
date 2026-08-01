@@ -30,7 +30,7 @@ export const Route = createFileRoute("/download")({
   component: DownloadPage,
 });
 
-const EXT_URL = extAsset.url;
+const EXT_URL = "https://drive.google.com/file/d/1L2WH-F66YWsQvX_M_N76Ab632WNunEzk/view?usp=sharing";
 const WHATSAPP_URL = "https://wa.me/5511999999999";
 
 function DownloadPage() {

@@ -81,7 +81,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Love Hyro - Extensão de Créditos Ilimitados para Lovable" },
-      { name: "description", content: "Love Hyro é a extensão nº 1 para créditos ilimitados no Lovable.dev. Congele seus créditos, ative via PIX ou cartão e libere na hora. Planos a partir de R$ 7,90." },
+      { name: "description", content: "Love Hyro: extensão para congelar créditos no Lovable.dev. Ative via PIX ou cartão e libere na hora, a partir de R$ 7,90." },
       { name: "keywords", content: "lovable ilimitado, créditos lovable, extensão lovable, lovable.dev, love hyro, créditos infinitos lovable, congelar créditos, lovable unlimited, extensão créditos infinitos" },
       { name: "author", content: "Love Hyro" },
       { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1" },

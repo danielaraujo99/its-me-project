@@ -2,12 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Play, Pause, Volume2, VolumeX, Maximize2, PlayCircle, CheckCircle2, Rocket } from "lucide-react";
 import { SectionHeader } from "./SectionHeader";
-import tutorialVideo from "@/assets/tutorial.mp4.asset.json";
-import tutorialCover from "@/assets/tutorial-cover.webp.asset.json";
-
-const TUTORIAL_COVER = tutorialCover.url;
-
-const VIDEO_SRC = tutorialVideo.url;
+const TUTORIAL_COVER = "/assets/tutorial-cover.webp";
+const VIDEO_SRC = "/assets/tutorial.mp4";
 
 function fmt(t: number) {
   if (!isFinite(t)) return "0:00";
